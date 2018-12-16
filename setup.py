@@ -9,11 +9,11 @@ from setuptools import (
 setup(
     name='ether_sql',
     version='0.1.3',
-    description="""A python library to push ethereum blockchain data into an sql database.""",
+    description="""Terminal's fork of a python library to push ethereum blockchain data into an sql database.""",
     long_description_markdown_filename='README.md',
-    author='Ankit Chiplunkar',
-    author_email='ankit@analyseether.com',
-    url='https://github.com/analyseether/ether_sql',
+    author='Janison Sivarajah',
+    author_email='janison@terminal.co',
+    url='https://github.com/terminal-systems/ether_sql',
     include_package_data=True,
     install_requires=[
         "web3==4.4.1",
