@@ -2,7 +2,8 @@ from decimal import Decimal
 import datetime
 
 EXPECTED_META_INFO = {'last_pushed_block': Decimal('56170'),
-                      'current_state_block': None}
+                      'current_state_block': None,
+                      'network': u'ethereum_main'}
 
 
 EXPECTED_BLOCK_PROPERTIES = {'block_number': Decimal('56160'),
@@ -16,7 +17,8 @@ EXPECTED_BLOCK_PROPERTIES = {'block_number': Decimal('56160'),
                              'gas_used': Decimal('50290'),
                              'parent_hash': u'0x071218ca3c6549337289e5e0e78227f59a82d62a972d6d73e6b8e55dcbaa65eb',
                              'extra_data': u'0x476574682f76312e302e312f6c696e75782f676f312e342e32',
-                             'gas_limit': Decimal('3141592')}
+                             'gas_limit': Decimal('3141592'),
+                             'network': u'ethereum_main'}
 
 EXPECTED_UNCLE_PROPERTIES = {'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 50),
                              'current_blocknumber': Decimal('56160'),
@@ -28,7 +30,8 @@ EXPECTED_UNCLE_PROPERTIES = {'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 5
                              'uncle_hash': u'0xc78c35720d930f9ef34b4e6fb9d02ffec936f9b02a8f0fa858456e4afd4d5614',
                              'parent_hash': u'0xcc30e8a9b15c548d5bf113c834143a8f0e1909fbfea96b2a208dc154293a78cf',
                              'extra_data': u'0x476574682f686261722f76312e302e312f6c696e75782f676f312e342e32',
-                             'gas_limit': Decimal('3141592')}
+                             'gas_limit': Decimal('3141592'),
+                             'network': u'ethereum_main'}
 
 EXPEXTED_TRANSACTION_PROPERTIES = {'nonce': Decimal('6'),
                                    'block_number': Decimal('56160'),
@@ -40,7 +43,8 @@ EXPEXTED_TRANSACTION_PROPERTIES = {'nonce': Decimal('6'),
                                    'sender': u'0x9B2c46642CAF6B936dc0633da521f1E946B7e18F',
                                    'value': Decimal('0'),
                                    'receiver': u'0xDBB576b5B0e7BF0570A981AAb3AD39A0c5F19EB1',
-                                   'start_gas': Decimal('90000')}
+                                   'start_gas': Decimal('90000'),
+                                   'network': u'ethereum_main'}
 
 EXPECTED_RECEIPT_PROPERTIES = {'status': None,
                                'block_number': Decimal('56160'),
@@ -49,7 +53,8 @@ EXPECTED_RECEIPT_PROPERTIES = {'status': None,
                                'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 50),
                                'cumulative_gas_used': Decimal('50290'),
                                'transaction_hash': u'0x8696c8669e07ae7e4ceef43945fe9c78252ab76f1a3c16658a04a644b8329736',
-                               'gas_used': Decimal('50290')}
+                               'gas_used': Decimal('50290'),
+                               'network': u'ethereum_main'}
 
 EXPECTED_LOG_PROPERTIES = {'block_number': Decimal('56160'),
                            'topics_count': Decimal('1'),
@@ -62,7 +67,8 @@ EXPECTED_LOG_PROPERTIES = {'block_number': Decimal('56160'),
                            'topic_1': u'0x16cdf1707799c6655baac6e210f52b94b7cec08adcaf9ede7dfe8649da926146',
                            'address': u'0xDBB576b5B0e7BF0570A981AAb3AD39A0c5F19EB1',
                            'transaction_index': Decimal('0'),
-                           'data': u'0x0000000000000000000000009b2c46642caf6b936dc0633da521f1e946b7e18f0000000000000000000000006463f715d594a1a4ace4bb9c3b288a74decf294d00000000000000000000000000000000000000000000000000000000000003e8'}
+                           'data': u'0x0000000000000000000000009b2c46642caf6b936dc0633da521f1e946b7e18f0000000000000000000000006463f715d594a1a4ace4bb9c3b288a74decf294d00000000000000000000000000000000000000000000000000000000000003e8',
+                           'network': u'ethereum_main'}
 
 EXPECTED_TRACE_PROPERTIES = {'subtraces': Decimal('0'),
                              'output': '0x0000000000000000000000000000000000000000000000000000000000000001',
@@ -78,7 +84,8 @@ EXPECTED_TRACE_PROPERTIES = {'subtraces': Decimal('0'),
                              'input_data': '0x90b98a110000000000000000000000006463f715d594a1a4ace4bb9c3b288a74decf294d00000000000000000000000000000000000000000000000000000000000003e8',
                              'transaction_index': Decimal('0'),
                              'transaction_hash': '0x8696c8669e07ae7e4ceef43945fe9c78252ab76f1a3c16658a04a644b8329736',
-                             'block_number': Decimal('56160')}
+                             'block_number': Decimal('56160'),
+                             'network': u'ethereum_main'}
 
 
 EXPECTED_STATE_DIFF_PROPERTIES = []
@@ -92,7 +99,8 @@ EXPECTED_STATE_DIFF_PROPERTIES.append({
     'nonce_diff': None,
     'code_from': None,
     'code_to': None,
-    'state_diff_type': 'fees'}
+    'state_diff_type': 'fees',
+    'network': 'ethereum_main'}
 )
 EXPECTED_STATE_DIFF_PROPERTIES.append({
     'block_number': Decimal('56160'),
@@ -104,7 +112,8 @@ EXPECTED_STATE_DIFF_PROPERTIES.append({
     'nonce_diff': 1,
     'code_from': None,
     'code_to': None,
-    'state_diff_type': 'sender'})
+    'state_diff_type': 'sender',
+    'network': 'ethereum_main'})
 EXPECTED_STATE_DIFF_PROPERTIES.append({
     'block_number': Decimal('56160'),
     'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 50),
@@ -115,7 +124,8 @@ EXPECTED_STATE_DIFF_PROPERTIES.append({
     'nonce_diff': None,
     'code_from': None,
     'code_to': None,
-    'state_diff_type': None})
+    'state_diff_type': None,
+    'network': 'ethereum_main'})
 EXPECTED_STATE_DIFF_PROPERTIES.append({
     'block_number': Decimal('56160'),
     'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 50),
@@ -126,7 +136,8 @@ EXPECTED_STATE_DIFF_PROPERTIES.append({
     'nonce_diff': None,
     'code_from': None,
     'code_to': None,
-    'state_diff_type': 'miner'})
+    'state_diff_type': 'miner',
+    'network': 'ethereum_main'})
 EXPECTED_STATE_DIFF_PROPERTIES.append({
     'block_number': Decimal('56160'),
     'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 50),
@@ -137,7 +148,8 @@ EXPECTED_STATE_DIFF_PROPERTIES.append({
     'nonce_diff': None,
     'code_from': None,
     'code_to': None,
-    'state_diff_type': 'uncle'})
+    'state_diff_type': 'uncle',
+    'network': 'ethereum_main'})
 
 EXPECTED_STORAGE_DIFF_PROPERTIES = []
 EXPECTED_STORAGE_DIFF_PROPERTIES.append({
@@ -149,7 +161,8 @@ EXPECTED_STORAGE_DIFF_PROPERTIES.append({
     'address': '0xDBB576b5B0e7BF0570A981AAb3AD39A0c5F19EB1',
     'position': '0x176f28426fded76854a5a0a4c618c35554983e8a7e93abf0310b736ef509d29e',
     'storage_from': '0x0000000000000000000000000000000000000000000000000000000000000000',
-    'storage_to': '0x00000000000000000000000000000000000000000000000000000000000003e8'})
+    'storage_to': '0x00000000000000000000000000000000000000000000000000000000000003e8',
+    'network': 'ethereum_main'})
 EXPECTED_STORAGE_DIFF_PROPERTIES.append({
     'block_number': Decimal('56160'),
     'timestamp': datetime.datetime(2015, 8, 9, 1, 14, 50),
@@ -159,7 +172,8 @@ EXPECTED_STORAGE_DIFF_PROPERTIES.append({
     'address': '0xDBB576b5B0e7BF0570A981AAb3AD39A0c5F19EB1',
     'position': '0x8627c64ae2959fac7fcf3b7380ff296fe9a6472ae59b0a5fd22f1e5b88614aea',
     'storage_from': '0x0000000000000000000000000000000000000000000000000000000000002710',
-    'storage_to': '0x0000000000000000000000000000000000000000000000000000000000002328'
+    'storage_to': '0x0000000000000000000000000000000000000000000000000000000000002328',
+    'network': 'ethereum_main'
     })
 
 EXPECTED_BLOCK_HASHES = {
