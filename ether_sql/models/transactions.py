@@ -4,6 +4,7 @@ import logging
 from web3.utils.encoding import to_int, to_hex
 from eth_utils import to_checksum_address
 from ether_sql.models import base
+from ether_sql.globals import get_current_session
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,8 @@ class Transactions(base):
                 'data': self.data,
                 'gas_price': self.gas_price,
                 'timestamp': self.timestamp,
-                'transaction_index': self.transaction_index}
+                'transaction_index': self.transaction_index,
+                'network': self.network}
 
     def __repr__(self):
         return "<Transaction {}>".format(self.transaction_hash)
@@ -69,10 +71,13 @@ class Transactions(base):
         :param datetime iso_timestamp: timestamp when the block containing the transaction was mined
         :param int block_number: block number of the block where this transaction was included
         """
+
         try:
             receiver = to_checksum_address(transaction_data['to'])
         except TypeError:
             receiver = None
+
+        current_session = get_current_session()
 
         transaction = cls(block_number=block_number,
                           nonce=to_int(transaction_data['nonce']),
@@ -84,6 +89,7 @@ class Transactions(base):
                           data=transaction_data['input'],
                           gas_price=str(to_int(transaction_data['gasPrice'])),
                           timestamp=iso_timestamp,
-                          transaction_index=to_int(transaction_data['transactionIndex']))
+                          transaction_index=to_int(transaction_data['transactionIndex']),
+                          network=current_session.network)
 
         return transaction

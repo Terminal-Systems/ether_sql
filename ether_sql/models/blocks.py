@@ -59,7 +59,8 @@ class Blocks(base):
             'extra_data': self.extra_data,
             'gas_limit': self.gas_limit,
             'uncle_count': self.uncle_count,
-            'transaction_count': self.transaction_count
+            'transaction_count': self.transaction_count,
+            'network': self.network
             }
 
     def __repr__(self):
@@ -74,6 +75,7 @@ class Blocks(base):
         :param dict block_data: data received from the JSON RPC call
         :param datetime iso_timestamp: timestamp when the block was mined
         """
+        current_session = get_current_session()
         block = cls(block_hash=to_hex(block_data['hash']),
                     parent_hash=to_hex(block_data['parentHash']),
                     difficulty=to_int(block_data['difficulty']),
@@ -85,7 +87,8 @@ class Blocks(base):
                     extra_data=to_hex(block_data['extraData']),
                     gas_limit=to_int(block_data['gasLimit']),
                     transaction_count=len(block_data['transactions']),
-                    uncle_count=len(block_data['uncles']))
+                    uncle_count=len(block_data['uncles']),
+                    network=current_session.network)
 
         return block
 
@@ -93,9 +96,8 @@ class Blocks(base):
     def get_max_block_number(cls):
         current_session = get_current_session()
         with current_session.db_session_scope():
-
             max_block_number = current_session.db_session.query(
-                               func.max(cls.block_number)).scalar()
+                               func.max(cls.block_number)).filter(cls.network == current_session.network).scalar()
         return max_block_number
 
     @classmethod
@@ -112,7 +114,7 @@ class Blocks(base):
         with current_session.db_session_scope():
             stmt = current_session.db_session.query(
                 func.generate_series(0, max_block_number).label('i')).subquery()
-            joined = stmt.outerjoin(cls, cls.block_number == stmt.c.i)
+            joined = stmt.outerjoin(cls, cls.block_number == stmt.c.i and cls.network == current_session.network)
             missing_blocks = current_session.db_session.query(stmt.c.i.label('block_number')).\
                 select_from(joined).filter(cls.block_number == None).all()
         return missing_blocks

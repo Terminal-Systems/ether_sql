@@ -4,6 +4,7 @@ import logging
 from eth_utils import to_checksum_address
 from web3.utils.encoding import to_int, to_hex
 from ether_sql.models import base
+from ether_sql.globals import get_current_session
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,8 @@ class Logs(base):
                 'topic_1': self.topic_1,
                 'topic_2': self.topic_2,
                 'topic_3': self.topic_3,
-                'topic_4': self.topic_4
+                'topic_4': self.topic_4,
+                'network': self.network
         }
 
     @classmethod
@@ -71,7 +73,7 @@ class Logs(base):
 
         """
         topics_count = len(log_data['topics'])
-
+        current_session = get_current_session()
         log = cls(transaction_hash=to_hex(log_data['transactionHash']),
                   transaction_index=to_int(log_data['transactionIndex']),
                   topics_count=topics_count,
@@ -83,7 +85,8 @@ class Logs(base):
                   topic_1='',
                   topic_2='',
                   topic_3='',
-                  topic_4='')
+                  topic_4='',
+                  network=current_session.network)
 
         if topics_count == 0:
             logger.warn('No topics present')

@@ -4,7 +4,7 @@ from web3.utils.encoding import to_hex
 from web3.utils.formatters import hex_to_integer
 from eth_utils import to_checksum_address
 from ether_sql.models import base
-
+from ether_sql.globals import get_current_session
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,8 @@ class Traces(base):
          'gas_used': self.gas_used,
          'contract_address': self.contract_address,
          'output': self.output,
-         'error': self.error
+         'error': self.error,
+         'network': self.network
         }
 
     @classmethod
@@ -87,6 +88,7 @@ class Traces(base):
 
         """
         logger.debug(dict_trace['action'])
+        current_session = get_current_session()
         trace = cls(transaction_hash=transaction_hash,
                     block_number=block_number,
                     trace_address=dict_trace['traceAddress'],
@@ -101,7 +103,8 @@ class Traces(base):
                     gas_used=None,
                     output='',
                     contract_address='',
-                    error='')
+                    error='',
+                    network=current_session.network)
 
         action = dict_trace['action']
 

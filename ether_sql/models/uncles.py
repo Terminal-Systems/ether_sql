@@ -5,6 +5,7 @@ from web3.utils.formatters import hex_to_integer
 import logging
 from eth_utils import to_checksum_address
 from ether_sql.models import base
+from ether_sql.globals import get_current_session
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,8 @@ class Uncles(base):
                 'timestamp': self.timestamp,
                 'sha3uncles': self.sha3uncles,
                 'extra_data': self.extra_data,
-                'gas_limit': self.gas_limit
+                'gas_limit': self.gas_limit,
+                'network': self.network
                 }
 
     def __repr__(self):
@@ -70,6 +72,7 @@ class Uncles(base):
         :param datetime iso_timestamp: timestamp when the block was mined
         """
         logger.debug('{}'.format(uncle_data['gasUsed']))
+        current_session = get_current_session()
         uncle = cls(uncle_hash=uncle_data['hash'],
                     uncle_blocknumber=hex_to_integer(uncle_data['number']),  # 'uncle_blocknumber'
                     parent_hash=uncle_data['parentHash'],  # parent_hash
@@ -80,6 +83,7 @@ class Uncles(base):
                     timestamp=iso_timestamp,
                     sha3uncles=uncle_data['sha3Uncles'],  # SHA3uncles
                     extra_data=uncle_data['extraData'],  # extra_data
-                    gas_limit=hex_to_integer(uncle_data['gasLimit']))
+                    gas_limit=hex_to_integer(uncle_data['gasLimit']),
+                    network=current_session.network)
 
         return uncle

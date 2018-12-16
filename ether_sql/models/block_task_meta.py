@@ -29,6 +29,7 @@ class BlockTaskMeta(base):
             'state': self.state,
             'block_number': self.block_number,
             'block_hash': self.block_hash,
+            'network': self.network
             }
 
     @classmethod
@@ -38,7 +39,8 @@ class BlockTaskMeta(base):
                               state=state,
                               block_number=block_number,
                               block_hash=block_hash,
-                              task_id=task_id)
+                              task_id=task_id,
+                              network=current_session.network)
         with current_session.db_session_scope():
             current_session.db_session.add(block_task_meta)
 
@@ -46,7 +48,8 @@ class BlockTaskMeta(base):
     def update_block_task_meta_from_block_number(cls, current_session,
             block_number, **kwargs):
         block_task_meta = current_session.db_session.query(cls).\
-                filter_by(block_number=block_number)
+                filter_by(block_number=block_number).\
+                filter_by(network=current_session.network)
         logger.debug('Updating task meta of block {0}'.format(block_number))
         for i_block_task_meta in block_task_meta:
             for key, value in kwargs.items():
@@ -57,17 +60,20 @@ class BlockTaskMeta(base):
     @classmethod
     def get_block_task_meta_from_task_id(cls, current_session, task_id):
         return current_session.db_session.query(cls).\
-            filter_by(task_id=task_id)
+            filter_by(task_id=task_id).\
+            filter_by(network=current_session.network)
 
     @classmethod
     def get_block_task_meta_from_block_number(cls, current_session, block_number):
         return current_session.db_session.query(cls).\
-            filter_by(block_number=block_number)
+            filter_by(block_number=block_number).\
+            filter_by(network=current_session.network)
 
     @classmethod
     def get_block_task_meta_from_block_hash(cls, current_session, block_hash):
         return current_session.db_session.query(cls).\
-            filter_by(block_hash=block_hash)
+            filter_by(block_hash=block_hash).\
+            filter_by(network=current_session.network)
 
     @classmethod
     def get_blocks_to_be_pushed_in_queue(cls, current_session):
@@ -76,5 +82,6 @@ class BlockTaskMeta(base):
         block_lag = current_session.settings.BLOCK_LAG
         query = current_session.db_session.query(cls.block_number).filter(
             and_(cls.state=='WAITING',
-            cls.block_number < current_eth_blocknumber-block_lag))
+            cls.block_number < current_eth_blocknumber-block_lag,\
+            cls.network==current_session.network))
         return query.from_self().distinct()

@@ -3,7 +3,7 @@ from web3.utils.encoding import to_int, to_hex
 from eth_utils import to_checksum_address
 from ether_sql.models import base
 from ether_sql.constants import mainnet
-
+from ether_sql.globals import get_current_session
 
 class Receipts(base):
     """
@@ -40,7 +40,8 @@ class Receipts(base):
             'contract_address': self.contract_address,
             'block_number': self.block_number,
             'timestamp': self.timestamp,
-            'transaction_index': self.transaction_index
+            'transaction_index': self.transaction_index,
+            'network': self.network
             }
 
     def __repr__(self):
@@ -65,6 +66,8 @@ class Receipts(base):
         except TypeError:
             contract_address = None
 
+        currrent_session = get_current_session()
+
         receipt = cls(transaction_hash=to_hex(receipt_data['transactionHash']),
                       status=status,
                       gas_used=to_int(receipt_data['gasUsed']),
@@ -72,6 +75,7 @@ class Receipts(base):
                       contract_address=contract_address,
                       block_number=block_number,
                       timestamp=timestamp,
-                      transaction_index=to_int(receipt_data['transactionIndex']))
+                      transaction_index=to_int(receipt_data['transactionIndex']),
+                      network=currrent_session.network)
 
         return receipt

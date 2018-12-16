@@ -43,7 +43,8 @@ class State(base):
             'address': self.address,
             'balance': self.balance,
             'nonce': self.balance,
-            'code': self.code
+            'code': self.code,
+            'network': self.network
         }
 
     @classmethod
@@ -52,11 +53,13 @@ class State(base):
             _nonce = 0
         else:
             _nonce = nonce
+        current_session = get_current_session()
         state = cls(
                     address=to_checksum_address(address),
                     balance=balance,
                     nonce=_nonce,
-                    code=code)
+                    code=code,
+                    network=current_session.network)
         return state
 
     @classmethod
@@ -86,14 +89,16 @@ class State(base):
 
         current_session = get_current_session()
         with current_session.db_session_scope():
-            current_session.db_session.query(Storage).delete()
-            current_session.db_session.query(cls).delete()
+            current_session.db_session.query(Storage).\
+                filter(Storage.network == current_session.network).delete()
+            current_session.db_session.query(cls).\
+                filter(cls.network == current_session.network).delete()
             # query to get the balance
             query_balance = current_session.db_session.query(
                             StateDiff.address,
                             func.sum(StateDiff.balance_diff).label('balance'),
                             func.sum(StateDiff.nonce_diff).label('nonce')).\
-                filter(StateDiff.block_number <= block_number).\
+                filter(StateDiff.block_number <= block_number, StateDiff.network == current_session.network).\
                 group_by(StateDiff.address)
             subquery_balance = query_balance.subquery()
             # query to get the code
@@ -104,7 +109,8 @@ class State(base):
                 .label('row_number')
             query_code = current_session.db_session.query(
                 StateDiff.address.label('address'),
-                StateDiff.code_to.label('code'))
+                StateDiff.code_to.label('code')).\
+                    filter(StateDiff.network == current_session.network)
             query_code = query_code.add_column(row_number_column)
             query_code = query_code.filter(
                 or_(StateDiff.code_from != None, StateDiff.code_to != None))
@@ -118,6 +124,7 @@ class State(base):
                 subquery_balance.c.balance,
                 subquery_balance.c.nonce,
                 subquery_code.c.code)
+            # TODO @jsonsivar: test if this needs to factor in network
             query_state = query_state.outerjoin(subquery_code, subquery_balance.c.address == subquery_code.c.address)
 
             # updating the state table with query results
