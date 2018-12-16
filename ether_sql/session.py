@@ -33,6 +33,9 @@ class Session():
         setup_logging(settings=self.settings)
         logger.debug(self.settings.LOG_LEVEL)
 
+        logger.info('CONNNECTING TO NETWORK {}'.format(self.settings.ETH_NETWORK))
+        self.network = self.settings.ETH_NETWORK
+
         self.db_engine, self.url = setup_db_engine(settings=self.settings)
 
         self.w3 = setup_node_session(settings=self.settings)
