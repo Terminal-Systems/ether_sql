@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import MetaData
+from sqlalchemy import Column, String, MetaData
 
 convention = {
   "ix": 'ix_%(column_0_label)s',
@@ -11,7 +11,11 @@ convention = {
 
 metadata = MetaData(naming_convention=convention)
 
-base = declarative_base(metadata=metadata)
+# Add a network column to be used for all tables
+class Base(object):
+  network = Column(String(32), nullable=False)
+
+base = declarative_base(metadata=metadata, cls=Base)
 
 # Initializing these classes here to remove sqlalchemy.exc.InvalidRequestError
 # More here: https://stackoverflow.com/a/45613994/3420738
