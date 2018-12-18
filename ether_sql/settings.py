@@ -14,11 +14,10 @@ CELERYD_TASK_LOG_FORMAT = '[%(asctime)s][PID:%(process)d][%(levelname)s][%(proce
 
 class DefaultSettings():
     # SQLALCHEMY settings
-    SQLALCHEMY_USER = os.environ.get("USER")
-    # password that is set when creating psql user
-    SQLALCHEMY_PASSWORD = 'develop'
-    SQLALCHEMY_DB = 'ether_sql'
-    SQLALCHEMY_HOST = 'localhost'
+    SQLALCHEMY_USER = os.environ.get("DB_USERNAME")
+    SQLALCHEMY_PASSWORD = os.environ.get("DB_PASSWORD")
+    SQLALCHEMY_DB = os.environ.get("DB_NAME")
+    SQLALCHEMY_HOST = os.environ.get("DB_HOST")
     SQLALCHEMY_PORT = 5432
 
     # Logging settings
@@ -39,11 +38,24 @@ class DefaultSettings():
     BLOCK_LAG = 100
     FILTER_TIME = 30
 
+    ETH_NETWORK = os.environ.get("ETH_NETWORK")
+
+    ETH_NETWORK_POSSIBLE_VALUES = [
+        "ethereum_main",
+        "ethereum_ropsten",
+        "ethereum_kovan",
+        "ethereum_rinkeby",
+    ]
+
+    if(ETH_NETWORK not in ETH_NETWORK_POSSIBLE_VALUES):
+        raise ValueError("ETH_NETWORK invalid")
+
+
 class PersonalInfuraSettings(DefaultSettings):
     NODE_TYPE = "Infura"
-    NODE_API_TOKEN = ""  # your infura api_token
+    NODE_API_TOKEN = os.environ.get("INFURA_ID")  # your infura api_token
     NODE_URL = 'https://mainnet.infura.io/{}'.format(NODE_API_TOKEN)
-
+    # TODO @jsonsivar: should add infura secret as well
 
 class PersonalParitySettings(DefaultSettings):
     NODE_TYPE = "Parity"
@@ -58,8 +70,7 @@ class PersonalGethSettings(DefaultSettings):
 
 class TestSettings(DefaultSettings):
     # SQLALCHEMY settings
-    SQLALCHEMY_PASSWORD = 'develop'
-    SQLALCHEMY_DB = 'ether_sql_tests'
+    SQLALCHEMY_DB = 'ethereum_test'
     NEW_BLOCKS = False
     # Logging settings
     LOG_LEVEL = "DEBUG"
@@ -67,7 +78,6 @@ class TestSettings(DefaultSettings):
 
 
 class ParityTestSettings(TestSettings):
-
     # Node settings
     # Available options 'Geth', 'Parity', 'Infura'
     NODE_TYPE = "Parity"
@@ -87,3 +97,7 @@ def get_setting_names():
         if inspect.isclass(obj):
             setting_names.append(name)
     return setting_names
+
+# TODO @jsonsivar: for all settings, should validate ETH_NETWORK value
+#   against actual network ID on the node/infura
+

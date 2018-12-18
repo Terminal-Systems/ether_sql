@@ -34,11 +34,13 @@ class Storage(base):
         return {
             'address': self.address,
             'position': self.position,
-            'storage': self.storage}
+            'storage': self.storage,
+            'network': self.network}
 
     @classmethod
     def add_storage(cls, address, position, storage):
-        storage = cls(address=address, position=position, storage=storage)
+        current_session = get_current_session()
+        storage = cls(address=address, position=position, storage=storage, network=current_session.network)
         return storage
 
     @classmethod
@@ -54,7 +56,8 @@ class Storage(base):
             order_by=[StorageDiff.block_number.desc(),
                       StorageDiff.transaction_index.desc()])\
             .label('row_number')
-        query = current_session.db_session.query(StorageDiff.address, StorageDiff.position, StorageDiff.storage_to.label('storage'))
+        query = current_session.db_session.query(StorageDiff.address, StorageDiff.position, StorageDiff.storage_to.label('storage')).\
+            filter(StorageDiff.network == current_session.network)
         query = query.add_column(row_number_column)
         query = query.filter(
             and_(

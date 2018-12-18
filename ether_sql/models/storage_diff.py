@@ -52,6 +52,7 @@ class StorageDiff(base):
             'position': self.position,
             'storage_from': self.storage_from,
             'storage_to': self.storage_to,
+            'network': self.network
         }
 
     @classmethod

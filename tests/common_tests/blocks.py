@@ -74,36 +74,37 @@ def verify_state_at_block(block_number):
 def verify_block_range_56160_56170():
     session = get_current_session()
     with session.db_session_scope():
-        logger.debug('Total blocks {}'.format(session.db_session.query(Blocks).count()))
-        assert session.db_session.query(Blocks).count() == 11
-        assert session.db_session.query(Transactions).count() == 3
-        assert session.db_session.query(Receipts).count() == 3
-        assert session.db_session.query(Logs).count() == 1
-        assert session.db_session.query(Uncles).count() == 1
+        logger.debug('Total blocks {}'.format(session.db_session.query(Blocks).\
+            filter(Blocks.network==session.network).count()))
+        assert session.db_session.query(Blocks).filter(Blocks.network==session.network).count() == 11
+        assert session.db_session.query(Transactions).filter(Transactions.network==session.network).count() == 3
+        assert session.db_session.query(Receipts).filter(Receipts.network==session.network).count() == 3
+        assert session.db_session.query(Logs).filter(Logs.network==session.network).count() == 1
+        assert session.db_session.query(Uncles).filter(Uncles.network==session.network).count() == 1
         # assert session.db_session.query(MetaInfo).count() == 1
 
         number_of_rows_in_meta_info = session.db_session.\
-            query(MetaInfo).count()
+            query(MetaInfo).filter(MetaInfo.network==session.network).count()
         meta_info_properties_in_sql = session.db_session.\
-            query(MetaInfo).first().to_dict()
+            query(MetaInfo).filter(MetaInfo.network==session.network).first().to_dict()
         assert number_of_rows_in_meta_info == 1
         print(meta_info_properties_in_sql)
         assert meta_info_properties_in_sql == EXPECTED_META_INFO
 
         if session.settings.PARSE_TRACE:
-            assert session.db_session.query(Traces).count() == 3
+            assert session.db_session.query(Traces).filter(Blocks.network==session.network).count() == 3
 
         if session.settings.PARSE_STATE_DIFF:
-            assert session.db_session.query(StateDiff).count() == 20
-            assert session.db_session.query(StorageDiff).count() == 2
+            assert session.db_session.query(StateDiff).filter(StateDiff.network==session.network).count() == 20
+            assert session.db_session.query(StorageDiff).filter(StorageDiff.network==session.network).count() == 2
             assert session.db_session.query(StateDiff).filter_by(
-                state_diff_type='miner').count() == 11
+                state_diff_type='miner').filter_by(network=session.network).count() == 11
             assert session.db_session.query(StateDiff).filter_by(
-                state_diff_type='fees').count() == 3
+                state_diff_type='fees').filter_by(network=session.network).count() == 3
             assert session.db_session.query(StateDiff).filter_by(
-                state_diff_type='sender').count() == 3
+                state_diff_type='sender').filter_by(network=session.network).count() == 3
             assert session.db_session.query(StateDiff).filter_by(
-                state_diff_type='uncle').count() == 1
+                state_diff_type='uncle').filter_by(network=session.network).count() == 1
 
 
 def verify_block_56160_contents():
@@ -112,33 +113,39 @@ def verify_block_56160_contents():
     with session.db_session_scope():
 
         block_properties_in_sql = session.db_session.\
-            query(Blocks).filter_by(block_number=56160).first().to_dict()
+            query(Blocks).filter_by(block_number=56160).\
+            filter_by(network=session.network).first().to_dict()
         assert block_properties_in_sql == EXPECTED_BLOCK_PROPERTIES
 
         # comparing values of uncles
         uncle_properties_in_sql = session.db_session.\
-            query(Uncles).filter_by(current_blocknumber=56160).first().to_dict()
+            query(Uncles).filter_by(current_blocknumber=56160).\
+            filter_by(network=session.network).first().to_dict()
         assert uncle_properties_in_sql == EXPECTED_UNCLE_PROPERTIES
 
         # comparing values of transactions
         transaction_properties_in_sql = session.db_session.\
-            query(Transactions).filter_by(block_number=56160).first().to_dict()
+            query(Transactions).filter_by(block_number=56160).\
+            filter_by(network=session.network).first().to_dict()
         assert transaction_properties_in_sql == EXPEXTED_TRANSACTION_PROPERTIES
 
         # comparing values of receipts
         receipt_properties_in_sql = session.db_session.\
-            query(Receipts).filter_by(block_number=56160).first().to_dict()
+            query(Receipts).filter_by(block_number=56160).\
+            filter_by(network=session.network).first().to_dict()
         assert receipt_properties_in_sql == EXPECTED_RECEIPT_PROPERTIES
 
         # comparing values of logs
         log_properties_in_sql = session.db_session.\
-            query(Logs).filter_by(block_number=56160).first().to_dict()
+            query(Logs).filter_by(block_number=56160).\
+            filter_by(network=session.network).first().to_dict()
         assert log_properties_in_sql == EXPECTED_LOG_PROPERTIES
 
         # comparing values of traces
         if session.settings.PARSE_TRACE:
             trace_properties_in_sql = session.\
-                db_session.query(Traces).filter_by(block_number=56160).first().\
+                db_session.query(Traces).filter_by(block_number=56160).\
+                filter_by(network=session.network).first().\
                 to_dict()
             assert trace_properties_in_sql == EXPECTED_TRACE_PROPERTIES
 
@@ -146,14 +153,16 @@ def verify_block_56160_contents():
         if session.settings.PARSE_STATE_DIFF:
             # comparing values if state diffs
             state_diff_property_in_sql = session.\
-                db_session.query(StateDiff).filter_by(block_number=56160).all()
+                db_session.query(StateDiff).filter_by(block_number=56160).\
+                filter_by(network=session.network).all()
             for i in range(0, len(state_diff_property_in_sql)):
                 assert state_diff_property_in_sql[i].to_dict() == \
                     EXPECTED_STATE_DIFF_PROPERTIES[i]
 
         # comparing values of storage_diffs
             storage_diff_property_in_sql = session.\
-                db_session.query(StorageDiff).filter_by(block_number=56160).all()
+                db_session.query(StorageDiff).filter_by(block_number=56160).\
+                filter_by(network=session.network).all()
             for i in range(0, len(storage_diff_property_in_sql)):
                 assert storage_diff_property_in_sql[i].to_dict() == \
                     EXPECTED_STORAGE_DIFF_PROPERTIES[i]
@@ -164,11 +173,11 @@ def verify_removed_block_range_56160_56170():
         remove_block_number(i)
     session = get_current_session()
     with session.db_session_scope():
-        assert session.db_session.query(Blocks).count() == 0
-        assert session.db_session.query(Transactions).count() == 0
-        assert session.db_session.query(Receipts).count() == 0
-        assert session.db_session.query(Logs).count() == 0
-        assert session.db_session.query(Uncles).count() == 0
-        assert session.db_session.query(Traces).count() == 0
-        assert session.db_session.query(StateDiff).count() == 0
-        assert session.db_session.query(StorageDiff).count() == 0
+        assert session.db_session.query(Blocks).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(Transactions).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(Receipts).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(Logs).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(Uncles).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(Traces).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(StateDiff).filter_by(network=session.network).count() == 0
+        assert session.db_session.query(StorageDiff).filter_by(network=session.network).count() == 0

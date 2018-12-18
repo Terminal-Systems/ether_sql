@@ -23,7 +23,8 @@ def match_state_dump_to_state_table(block_number):
     with current_session.db_session_scope():
         for address in state:
             state_table_row = current_session.db_session.query(State).\
-                filter_by(address=to_checksum_address(address)).first()
+                filter_by(address=to_checksum_address(address)).\
+                filter_by(network=current_session.network).first()
             assert state_table_row.balance == hex_to_integer(state[address]['balance'])
             assert state_table_row.nonce == hex_to_integer(state[address]['nonce'])
             if 'code' in state[address].keys():

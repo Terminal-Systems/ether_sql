@@ -22,6 +22,7 @@ from ether_sql.constants.mainnet import (
     POST_BYZANTINIUM_REWARD,
 )
 from eth_utils import to_checksum_address
+from ether_sql.globals import get_current_session
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +71,7 @@ class StateDiff(base):
             'code_from': self.code_from,
             'code_to': self.code_to,
             'state_diff_type': self.state_diff_type,
+            'network': self.network
         }
 
     def _parseStateDiff(account_state, type):
@@ -121,6 +123,8 @@ class StateDiff(base):
             if address == miner and balance_diff == fees:
                 state_diff_type = 'fees'
 
+        current_session = get_current_session()
+
         state_diff = cls(block_number=block_number,
                          timestamp=timestamp,
                          transaction_hash=transaction_hash,
@@ -130,7 +134,8 @@ class StateDiff(base):
                          nonce_diff=nonce_diff,
                          code_from=code_from,
                          code_to=code_to,
-                         state_diff_type=state_diff_type)
+                         state_diff_type=state_diff_type,
+                         network=current_session.network)
         return state_diff
 
     @classmethod
@@ -218,6 +223,7 @@ class StateDiff(base):
 
     @classmethod
     def parse_genesis_rewards(cls, current_session, block):
+        # TODO @jsonsivar: add genesis for other networks
         with open('ether_sql/constants/genesis_rewards.csv',
                   'r', encoding='utf-8') as genesis_rewards:
             reader = csv.reader(genesis_rewards)

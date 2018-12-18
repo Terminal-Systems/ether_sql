@@ -25,34 +25,41 @@ class MetaInfo(base):
         return {
             'last_pushed_block': self.last_pushed_block,
             'current_state_block': self.current_state_block,
+            'network': self.network,
         }
 
     @classmethod
     def get_last_pushed_block(cls):
         current_session = get_current_session()
         with current_session.db_session_scope():
-            return current_session.db_session.query(cls).first().\
-                        last_pushed_block
+            return current_session.db_session.query(cls).\
+                filter(cls.network == current_session.network).last_pushed_block.\
+                first()
 
     @classmethod
     def get_current_state_block(cls):
         current_session = get_current_session()
         with current_session.db_session_scope():
-            return current_session.db_session.query(cls).first().\
-                        current_state_block
+            return current_session.db_session.query(cls).\
+                current_state_block.filter(cls.network == current_session.network).\
+                first()
 
     @classmethod
     def set_last_pushed_block(cls, current_session, block_number):
-        meta_info = current_session.db_session.query(cls).filter(cls.id == 1).first()
+        meta_info = current_session.db_session.query(cls).filter(cls.id == 1).\
+            filter(cls.network == current_session.network).\
+            first()
         if meta_info is None:
-            meta_info = cls(last_pushed_block=block_number)
+            meta_info = cls(last_pushed_block=block_number, network=current_session.network)
         else:
             meta_info.last_pushed_block = block_number
         current_session.db_session.add(meta_info)
 
     @classmethod
     def set_current_state_block(cls, current_session, block_number):
-        meta_info = current_session.db_session.query(cls).filter(cls.id == 1).first()
+        meta_info = current_session.db_session.query(cls).filter(cls.id == 1).\
+            filter(cls.network == current_session.network).\
+            first()
         if meta_info is None:
             meta_info = cls(current_state_block=block_number)
         else:

@@ -59,7 +59,8 @@ def scrape_blocks(list_block_numbers, mode):
             block_task_meta = BlockTaskMeta(task_id=r.id,
                                             task_name='add_block_number',
                                             state='PENDING',
-                                            block_number=block_number)
+                                            block_number=block_number,
+                                            network=current_session.network)
             with current_session.db_session_scope():
                 current_session.db_session.add(block_task_meta)
         elif mode == 'single':
@@ -129,6 +130,7 @@ def add_block_number(block_number):
 
         transaction_list = block_data['transactions']
         # loop to get the transaction, receipts, logs and traces of the block
+
         for index, transaction_data in enumerate(transaction_list):
             transaction = Transactions.add_transaction(transaction_data,
                                                        block_number=block_number,
